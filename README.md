@@ -15,14 +15,27 @@ Open the URL printed by Vite (default http://localhost:5173) and click **PLAY**.
 
 ## Controls
 
+Works on Mac, Windows, Linux desktops (keyboard) and iOS / Android phones &
+tablets (on-screen touch pads, via Pointer Events).
+
 | Action | Keyboard | Touch |
 |---|---|---|
 | Forward | `W` / `↑` | Left pad ▲ |
 | Backward | `S` / `↓` | Left pad ▼ |
 | Strafe Left | `A` / `←` | Left pad ◀ |
 | Strafe Right | `D` / `→` | Left pad ▶ |
-| Swim Up | `Space` | Right pad ▲ |
-| Swim Down | `Shift` | Right pad ▼ |
+| Swim Up | `Space` (or `E` / `R`) | Right pad ▲ |
+| Swim Down | `Shift` (or `Q` / `F`) | Right pad ▼ |
+
+The shark moves freely in all six directions through the full 3D ocean, so
+the player can dive to the sea floor or rise toward the surface.
+
+## Rival shark
+
+A friendly purple **rival shark** wanders the ocean and hunts the nearest
+fish at a slow, kid-beatable pace. Its score is shown beneath the player's
+score in the HUD, with a `−N` floater wherever it eats so you can see what
+got snatched.
 
 ## Build & preview
 

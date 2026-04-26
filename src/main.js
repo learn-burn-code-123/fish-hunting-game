@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import { initScene } from './scene.js';
-import { createShark } from './shark.js';
+import { createShark, createRivalShark } from './shark.js';
 import {
   spawnFishSwarm,
   updateFish,
   checkEats,
+  getNearestFish,
   getFishCount,
   resetFish
 } from './fish.js';
@@ -15,6 +16,8 @@ import {
   showHUD,
   updateScore,
   setScoreOnly,
+  updateRivalScore,
+  setRivalScoreOnly,
   resetBest
 } from './hud.js';
 import { unlockAudio, playChomp, playBump } from './audio.js';
@@ -23,11 +26,13 @@ const TARGET_FISH = 25;
 
 const { scene, camera, renderer } = initScene();
 const shark = createShark(scene);
+const rival = createRivalShark(scene);
 initWorld(scene);
 spawnFishSwarm(scene, TARGET_FISH, shark.position);
 bindInput();
 
 let score = 0;
+let rivalScore = 0;
 let started = false;
 let lastBumpAt = 0;
 
@@ -36,7 +41,9 @@ initHUD({
   camera,
   onReset: () => {
     score = 0;
+    rivalScore = 0;
     setScoreOnly(0);
+    setRivalScoreOnly(0);
     resetBest();
     resetFish(scene);
     spawnFishSwarm(scene, TARGET_FISH, shark.position);
@@ -54,23 +61,17 @@ function startGame() {
   showHUD();
 }
 playBtn.addEventListener('click', startGame);
-// Also start on first key press
-window.addEventListener(
-  'keydown',
-  () => {
-    if (!started) startGame();
-  },
-  { once: false }
-);
+window.addEventListener('keydown', () => {
+  if (!started) startGame();
+});
 
 const clock = new THREE.Clock();
 
-// Initial camera placement (so we don't snap on first frame)
 camera.position.copy(shark.getCameraTarget());
 camera.lookAt(shark.position);
 
 function animate() {
-  const dt = Math.min(clock.getDelta(), 1 / 20); // clamp for perf hiccups
+  const dt = Math.min(clock.getDelta(), 1 / 20);
 
   if (started) {
     shark.update(dt, getInput());
@@ -80,10 +81,18 @@ function animate() {
       playBump();
     }
 
+    // Rival hunts the fish nearest to it. Only see fish within a generous
+    // sensing radius so it occasionally idles/wanders rather than constantly
+    // tractor-beaming the entire ocean.
+    const prey = getNearestFish(rival.position, 60);
+    rival.update(dt, prey);
+
     updateFish(dt, shark);
     updateWorld(dt, scene);
 
-    const eaten = checkEats(shark, scene);
+    // Player eats first (if both happen to overlap a fish on the same frame
+    // the kid wins — they're the protagonist).
+    const eaten = checkEats(shark, scene, 0.5);
     if (eaten) {
       score += eaten.points;
       shark.chomp();
@@ -91,14 +100,21 @@ function animate() {
       updateScore(score, eaten);
     }
 
-    // Top-up fish swarm in case any fish got disposed unexpectedly
+    const rivalAte = checkEats(rival, scene, 0.3);
+    if (rivalAte) {
+      rivalScore += rivalAte.points;
+      rival.chomp();
+      updateRivalScore(rivalScore, rivalAte);
+    }
+
     if (getFishCount() < TARGET_FISH - 5) {
       spawnFishSwarm(scene, TARGET_FISH - getFishCount(), shark.position);
     }
   } else {
-    // Idle animation: still update the world so the intro looks alive
+    // Idle animation: still update the world so the intro looks alive.
     updateWorld(dt, scene);
     updateFish(dt, shark);
+    rival.update(dt, getNearestFish(rival.position, 60));
   }
 
   // Camera follow (always)

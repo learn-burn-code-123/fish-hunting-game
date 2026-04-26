@@ -190,6 +190,32 @@ body {
   color: var(--ink);
 }
 
+.rival-line {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 2px dashed rgba(108, 95, 168, 0.35);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-weight: 700;
+  color: #6a5fa8;
+}
+
+.rival-emoji {
+  font-size: 1rem;
+}
+
+.rival-label {
+  font-size: 0.95rem;
+}
+
+.rival-value {
+  font-size: 1.4rem;
+  color: #6a5fa8;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.8);
+  line-height: 1;
+}
+
 .reset-btn {
   position: absolute;
   bottom: 16px;
@@ -236,7 +262,17 @@ body {
   height: 180px;
 }
 
-@media (pointer: coarse) {
+/* Show touch pads on any device the JS detects as touch-capable. */
+.has-touch .touch-pad {
+  display: block;
+}
+.has-touch .reset-btn {
+  bottom: 220px;
+}
+
+/* Belt-and-suspenders: also show on coarse-pointer devices (iPads in
+   Stage Manager, touch laptops, etc.) even before JS runs. */
+@media (any-pointer: coarse) {
   .touch-pad {
     display: block;
   }

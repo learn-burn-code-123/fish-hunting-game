@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 const STORAGE_KEY = 'blocky-shark-ocean.best';
 
-let scoreEl, bestEl, popupsEl, resetBtn;
+let scoreEl, bestEl, rivalEl, popupsEl, resetBtn;
 let renderer, camera;
 let bestScore = 0;
 
@@ -28,12 +28,14 @@ export function initHUD({ renderer: r, camera: c, onReset }) {
   camera = c;
   scoreEl = document.getElementById('score-value');
   bestEl = document.getElementById('best-value');
+  rivalEl = document.getElementById('rival-value');
   popupsEl = document.getElementById('popups');
   resetBtn = document.getElementById('reset-btn');
 
   bestScore = readBest();
   bestEl.textContent = String(bestScore);
   scoreEl.textContent = '0';
+  if (rivalEl) rivalEl.textContent = '0';
 
   resetBtn.addEventListener('click', () => {
     if (typeof onReset === 'function') onReset();
@@ -62,6 +64,15 @@ export function setScoreOnly(score) {
   scoreEl.textContent = String(score);
 }
 
+export function updateRivalScore(rivalScore, eaten) {
+  if (rivalEl) rivalEl.textContent = String(rivalScore);
+  if (eaten) showFloatingPopup(eaten, { rival: true });
+}
+
+export function setRivalScoreOnly(rivalScore) {
+  if (rivalEl) rivalEl.textContent = String(rivalScore);
+}
+
 const _v = new THREE.Vector3();
 
 function worldToScreen(pos) {
@@ -85,22 +96,29 @@ const POINT_COLORS = {
   gold: '#ffe24d'
 };
 
-function showFloatingPopup(eaten) {
+function showFloatingPopup(eaten, opts = {}) {
   if (!eaten || !eaten.position) return;
   const screen = worldToScreen(eaten.position);
   if (!screen.inFront) return;
 
   const el = document.createElement('div');
-  el.className = 'popup';
+  el.className = opts.rival ? 'popup popup-rival' : 'popup';
   el.textContent = `+${eaten.points}`;
   el.style.left = `${screen.x}px`;
   el.style.top = `${screen.y}px`;
-  el.style.color = POINT_COLORS[eaten.type] || 'white';
+  el.style.color = opts.rival
+    ? '#c4b6ff'
+    : POINT_COLORS[eaten.type] || 'white';
   if (eaten.type === 'gold') {
-    el.style.fontSize = '3rem';
-    el.textContent = `+${eaten.points} ⭐`;
+    el.style.fontSize = opts.rival ? '2rem' : '3rem';
+    el.textContent = `${opts.rival ? '−' : '+'}${eaten.points} ⭐`;
   } else if (eaten.type === 'rainbow') {
-    el.textContent = `+${eaten.points} 🌈`;
+    el.textContent = `${opts.rival ? '−' : '+'}${eaten.points} 🌈`;
+  } else if (opts.rival) {
+    // For the player it's a "+", for the rival show a small minus icon to
+    // make it clear that fish was lost.
+    el.textContent = `−${eaten.points}`;
+    el.style.fontSize = '1.4rem';
   }
   popupsEl.appendChild(el);
   setTimeout(() => el.remove(), 1100);

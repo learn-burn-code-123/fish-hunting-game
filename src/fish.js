@@ -263,9 +263,11 @@ function spawnBubbleBurst(scene, position) {
   }
 }
 
-export function checkEats(shark, scene) {
-  // Inflate shark's box for forgiveness
-  _sharkBox.setFromObject(shark.mesh).expandByScalar(0.5);
+// Generic eat detection for any "eater" with a `mesh` (or `group`) reference.
+// Returns the eaten fish info ({ type, points, position }) or null.
+export function checkEats(eater, scene, expand = 0.5) {
+  const mesh = eater.mesh ?? eater;
+  _sharkBox.setFromObject(mesh).expandByScalar(expand);
 
   for (let i = fishList.length - 1; i >= 0; i--) {
     const f = fishList[i];
@@ -280,12 +282,25 @@ export function checkEats(shark, scene) {
       spawnBubbleBurst(scene, screenPos);
       f.dispose(scene);
       fishList.splice(i, 1);
-      // Schedule a respawn 1-2s later
       pendingRespawns.push({ time: rand(1.0, 2.0), scene });
       return eaten;
     }
   }
   return null;
+}
+
+// Find the nearest fish to a given position (for the rival's hunting AI).
+export function getNearestFish(position, maxDistance = Infinity) {
+  let best = null;
+  let bestDistSq = maxDistance * maxDistance;
+  for (const f of fishList) {
+    const dSq = position.distanceToSquared(f.mesh.position);
+    if (dSq < bestDistSq) {
+      best = f;
+      bestDistSq = dSq;
+    }
+  }
+  return best;
 }
 
 export function getFishCount() {
