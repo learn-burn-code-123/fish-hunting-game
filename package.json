@@ -1,0 +1,17 @@
+{
+  "name": "blocky-shark-ocean",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A kid-friendly 3D Minecraft-style game where a blocky shark hunts colorful fish.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0a1f3d" />
+    <title>Blocky Shark Ocean</title>
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <!-- Intro overlay -->
+    <div id="intro" class="intro">
+      <div class="intro-card">
+        <h1 class="intro-title">🦈 Blocky Shark Ocean</h1>
+        <p class="intro-sub">Eat the fish!</p>
+        <button id="play-btn" class="play-btn" type="button">PLAY</button>
+        <p class="intro-hint">
+          Move: Arrow Keys / WASD &nbsp;•&nbsp; Up: Space &nbsp;•&nbsp; Down: Shift
+        </p>
+        <p class="intro-hint-mobile">Use the on-screen buttons on a tablet.</p>
+      </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud" class="hud hidden">
+      <div class="score-box">
+        <div class="score-line">
+          <span class="score-emoji">🐟</span>
+          <span class="score-label">Score</span>
+          <span id="score-value" class="score-value">0</span>
+        </div>
+        <div class="best-line">
+          <span class="best-label">Best</span>
+          <span id="best-value" class="best-value">0</span>
+        </div>
+      </div>
+
+      <button id="reset-btn" class="reset-btn" type="button" aria-label="Reset score">
+        ↺
+      </button>
+
+      <!-- Touch controls (shown on touch devices only via CSS) -->
+      <div id="touch-left" class="touch-pad touch-pad-left" aria-hidden="true">
+        <button class="tbtn tbtn-up" data-touch="forward">▲</button>
+        <button class="tbtn tbtn-left" data-touch="left">◀</button>
+        <button class="tbtn tbtn-right" data-touch="right">▶</button>
+        <button class="tbtn tbtn-down" data-touch="back">▼</button>
+      </div>
+      <div id="touch-right" class="touch-pad touch-pad-right" aria-hidden="true">
+        <button class="tbtn tbtn-up" data-touch="up">▲</button>
+        <button class="tbtn tbtn-down" data-touch="down">▼</button>
+      </div>
+    </div>
+
+    <!-- Floating popups layer -->
+    <div id="popups" class="popups"></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
